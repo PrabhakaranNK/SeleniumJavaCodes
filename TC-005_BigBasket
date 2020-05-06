@@ -1,0 +1,138 @@
+package vanillaScripts21Days;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+
+public class BigBasket21stApril {
+
+	public static void main(String[] args) throws InterruptedException {
+		
+		/*1) Go to https://www.bigbasket.com/
+			2) mouse over on  Shop by Category 
+			3)Go to FOODGRAINS, OIL & MASALA --> RICE & RICE PRODUCTS 
+			4) Click on Boiled & Steam Rice
+			5) Choose the Brand as bb Royal
+			6) Go to Ponni Boiled Rice - Super Premium and select 5kg bag from Dropdown
+			7) print the price of Rice
+			8) Click Add button
+			9) Verify the success message displayed 
+			10) Type Dal in Search field and enter
+			12) Go to Toor/Arhar Dal and select 2kg & set Qty 2 
+			13) Print the price of Dal
+			14) Click Add button
+			15) Mouse hover on My Basket 
+			16) Validate the Sub Total displayed for the selected items
+			17) Reduce the Quantity of Dal as 1 
+			18) Validate the Sub Total for the current items
+			19) Close the Browser*/
+
+		System.setProperty("webdriver.chrome.driver", "./drivers/Chromedriver/chromedriver Version 81/chromedriver.exe");
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notifications");
+
+		ChromeDriver driver = new ChromeDriver(options);
+		driver.get("https://www.bigbasket.com/");
+
+		//maximize
+
+		driver.manage().window().maximize();
+
+		//timeout
+
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		
+		//2) mouse over on  Shop by Category 
+		
+		//Thread.sleep(5000);
+		WebElement shopByCategory = driver.findElementByXPath("//a[@class='dropdown-toggle meganav-shop']");
+		Actions builder = new Actions(driver);
+		
+		builder.moveToElement(shopByCategory).perform();
+
+		//3)Go to FOODGRAINS, OIL & MASALA --> RICE & RICE PRODUCTS 
+		
+		WebElement foodgrainLink = driver.findElementByLinkText("Foodgrains, Oil & Masala");
+		
+		builder.moveToElement(foodgrainLink).perform();
+		
+		WebElement riceLink = driver.findElementByLinkText("Rice & Rice Products");
+		
+		builder.moveToElement(riceLink).perform();
+		
+		WebElement boiledRice = driver.findElementByLinkText("Boiled & Steam Rice");
+		builder.click(boiledRice).perform();
+		
+		//5) Choose the Brand as bb Royal
+		driver.findElementByXPath("(//span[@class='cr'])[3]").click();
+		
+		Thread.sleep(3000);
+		
+		//Go to Ponni Boiled Rice - Super Premium and select 5kg bag from Dropdown
+		
+		driver.findElementByXPath("(//span[@class='ng-scope'])[5]").click();
+		Thread.sleep(2000);
+		
+		driver.findElementByXPath("(//span[text()='5 kg'])[6]").click();
+		
+		//7) print the price of Rice
+		
+		String ricePrice = driver.findElementByXPath("(//span[@class='discnt-price'])[3]").getText();
+		ricePrice = ricePrice.replaceAll("\\D", "");
+		Integer priceRice = Integer.parseInt(ricePrice);
+		System.out.println("The price of 5KG rice" + ":" + priceRice);
+		
+		//8) Click Add button
+		driver.findElementByXPath("(//button[text()='Add '])[3]").click();
+		
+		//continue
+		driver.findElementByLinkText("Continue").click();
+		String successMessage = driver.findElementByXPath("(//button[@class='btn lt'])[3]/following-sibling::input").getAttribute("value");
+	
+		System.out.println("success message of added item is "+ ""+ successMessage);
+		
+		//10) Type Dal in Search field and enter
+		driver.findElementByXPath("(//div[@class='input-group'])[1]/input").sendKeys("dal",Keys.ENTER);
+		
+		//12) Go to Toor/Arhar Dal and select 2kg & set Qty 2 
+		driver.findElementByXPath("(//i[@class='fa fa-caret-down'])[2]").click();
+		// (//button[@class='btn btn-default dropdown-toggle form-control'])[2]
+		driver.findElementByXPath("(//span[text()='2 kg'])[4]").click();
+		driver.findElementByXPath("(//input[@class='form-control ng-pristine ng-untouched ng-valid ng-not-empty ng-valid-maxlength'])[3]").clear();
+		Thread.sleep(2000);
+		driver.findElementByXPath("//input[@class='form-control ng-valid ng-valid-maxlength ng-empty ng-dirty ng-valid-parse ng-touched']").sendKeys("2",Keys.TAB);
+		
+		//13) Print the price of Dal
+		String dalPrice = driver.findElementByXPath("(//span[@class='discnt-price'])[3]").getText();
+		System.out.println("The price of dal is" + "" + dalPrice);
+		
+		//14) Click Add button
+		driver.findElementByXPath("(//button[text()='Add '])[3]").click();
+		
+		Thread.sleep(10000);
+		
+		//15) Mouse hover on My Basket 
+		WebElement myBasket = driver.findElementByXPath("//a[@class='btn btn-default basket-btn-drop hidden-xs hidden-sm']");
+		builder.moveToElement(myBasket).perform();
+		
+		//16) Validate the Sub Total displayed for the selected items
+		Thread.sleep(3000);
+		String subtotal = driver.findElementByXPath("(//div[@class='row sub-cost ng-scope']//span)[1]").getText();
+		System.out.println("the price of all items"+ "" + subtotal);
+		
+		//17) Reduce the Quantity of Dal as 1 
+		driver.findElementByXPath("((//div[@class='btn-counter row'])[2]/button)[1]").click();
+		Thread.sleep(2000);
+		
+		String finalSubTotal = driver.findElementByXPath("(//div[@class='row sub-cost ng-scope']//span)[1]").getText();
+		
+		System.out.println("the final price" + "" + finalSubTotal); 
+	}
+
+}
