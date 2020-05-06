@@ -1,0 +1,169 @@
+package vanillaScripts21Days;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+
+public class PepperFry23rdApril {
+
+	public static void main(String[] args) throws InterruptedException, IOException {
+		/*23/04/2020
+		============
+		1) Go to https://www.pepperfry.com/
+		2) Mouseover on Furniture and click Office Chairs under Chairs
+		3) click Executive Chairs
+		4) Change the minimum Height as 50 in under Dimensions
+		5) Add "Poise Executive Chair in Black Colour" chair to Wishlist
+		6) Mouseover on Homeware and Click Pressure Cookers under Cookware
+		7) Select Prestige as Brand
+		8) Select Capacity as 1-3 Ltr
+		9) Add "Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr" to Wishlist
+		10) Verify the number of items in Wishlist
+		11) Navigate to Wishlist
+		12) Move Pressure Cooker only to Cart from Wishlist
+		13) Check for the availability for Pincode 600128
+		14) Click Proceed to Pay Securely
+		15 Click Proceed to Pay
+		16) Capture the screenshot of the item under Order Item
+		17) Close the browser*/
+
+		System.setProperty("webdriver.chrome.driver" , "./drivers/Chromedriver/chromedriver Version 81/chromedriver.exe" );
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notifications");
+
+		ChromeDriver driver = new ChromeDriver(options);
+	//	JavascriptExecutor js = (JavascriptExecutor) driver;
+		driver.get("https://www.pepperfry.com/");
+
+		//maximize
+		driver.manage().window().maximize();
+
+		//timeouts
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+		//close the two pops which came
+		Thread.sleep(15000);
+		WebElement frameClose = driver.findElementById("webklipper-publisher-widget-container-notification-frame");
+		driver.switchTo().frame(frameClose);
+		driver.findElementByXPath("//span[@class='wewidgeticon we_close icon-large']").click();
+		driver.switchTo().defaultContent();
+		driver.findElementByXPath("//div[@id='regPopUp']/a").click();
+		//driver.findElementByXPath("(//span[@class='wewidgeticon we_close icon-large']").click();
+
+
+		//		2) Mouseover on Furniture and click Office Chairs under Chairs
+		WebElement furniture = driver.findElementByLinkText("Furniture");
+		Actions builder = new Actions(driver);
+		builder.moveToElement(furniture).perform();
+
+		//office chair
+		WebElement officeChairs = driver.findElementByLinkText("Office Chairs");
+		builder.moveToElement(officeChairs).click().perform();
+
+		//3) click Executive Chairs
+		driver.findElementByXPath("//h5[text()='Executive Chairs']").click();
+
+		//4) Change the minimum Height as 50 in under Dimensions
+		//driver.findElementByXPath("(//div[@class='clip__filter-dimension-input-holder'])[1]").clear();
+		//driver.findElementByXPath("(//div[@class='clip__filter-dimension-input-holder'])[1]").sendKeys("50",Keys.TAB);
+
+		driver.findElementByXPath("(//input[@class='clipFilterDimensionHeightValue'])[1]").clear();
+		driver.findElementByXPath("(//input[@class='clipFilterDimensionHeightValue'])[1]").sendKeys("50", Keys.ENTER);
+
+		Thread.sleep(3000);
+		//again close the pop up
+		WebElement frameClose1 = driver.findElementById("webklipper-publisher-widget-container-notification-frame");
+
+		driver.switchTo().frame(frameClose1);
+		driver.findElementByXPath("//span[@class='wewidgeticon we_close icon-large']").click();
+		driver.switchTo().defaultContent();
+
+		//5) Add "Poise Executive Chair in Black Colour" chair to Wishlist
+		driver.findElementByXPath("(//a[@id='clip_wishlist_'])[2]").click();
+
+		//6) Mouseover on Homeware and Click Pressure Cookers under Cookware
+		WebElement homewareTab = driver.findElementByXPath("(//a[text()='Homeware'])[1]");
+		builder.moveToElement(homewareTab).perform();
+		builder.moveToElement(driver.findElementByLinkText("Pressure Cookers")).click().perform();
+
+		//select prestige as brand
+		driver.findElementByXPath("//label[text()='Prestige']").click();
+		Thread.sleep(3000);
+
+		//		8) Select Capacity as 1-3 Ltr
+
+		driver.findElementByXPath("//label[text()='1 Ltr - 3 Ltr']").click();
+
+		Thread.sleep(3000);
+		//9) Add "Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr" to Wishlist
+		driver.findElementByXPath("(//a[text()='Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr']/following::div/div)[2]").click();
+
+		//10) Verify the number of items in Wishlist
+
+		String wishlistItem = driver.findElementByXPath("(//span[@class='count_alert'])[2]").getText();
+		int wishlistItemCount = Integer.parseInt(wishlistItem);
+		System.out.println("The items in the wishlist is" + ":" + wishlistItemCount);
+		if (wishlistItemCount == 2) {
+			System.out.println("wishlist count is equal to two");
+
+		}else {
+			System.out.println("count is not equal to 2");
+		}
+
+		//11) Navigate to Wishlist
+		driver.findElementByXPath("//a[@class='pf-icon pf-icon-heart header_tab wistlist_img pending_alert']").click();
+
+		Thread.sleep(3000);
+		//12) Move Pressure Cooker only to Cart from Wishlist
+		//		driver.executeScript("window.scrollBy(0, 250)");
+		//driver.executeScript("window.scrollBy(0, 250)");
+		//js.executeScript("window.scrollBy(0,500)");
+		//Thread.sleep(2000);
+		
+		driver.findElementByXPath("//a[@class='gridview pf-icon pf-icon-grid-view']").click();
+		driver.findElementByXPath("(//a[text()='Add to Cart'])[2]").click();
+		//driver.findElementByXPath("//a[text()='Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr By...']/../following::div/a[@class='addtocart_icon']").click();
+
+		driver.findElementByXPath("//input[@class='srvc_pin_text']").sendKeys("600100");
+		driver.findElementByLinkText("Check").click();
+
+		boolean couponCode = driver.findElementByXPath("(//p[@class='pf-border pf-border-lighter-grey-50 pf-border-style-dashed pf-center pf-padding-tiny font-14 pf-italic-txt pf-text-grey pf-margin-top use-coupon'])[1]").isDisplayed();
+
+		if (couponCode = true) {
+			System.out.println("Item is available in mentioned pincode");
+
+		}else {
+			System.out.println("item is not available");
+		}
+
+		//proced to pay securely
+		Thread.sleep(3000);
+		driver.findElementByXPath("//a[text()='Proceed to pay securely ']").click();
+
+		Thread.sleep(3000);
+		driver.findElementByLinkText("PLACE ORDER").click();
+		Thread.sleep(3000);
+		driver.findElementByXPath("//span[text()='ORDER SUMMARY']").click();
+
+		//screenshot
+		WebElement cookerImage = driver.findElementByXPath("//input[@class='product_details']/following::figure/img");
+		File src = cookerImage.getScreenshotAs(OutputType.FILE);
+		File dest = new File("./snap/pepperfry.img");
+		 
+        FileUtils.copyFile(src, dest);
+
+	}
+
+}
