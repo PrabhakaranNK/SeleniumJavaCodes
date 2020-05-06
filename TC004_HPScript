@@ -1,0 +1,132 @@
+package vanillaScripts21Days;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+
+public class HpApp17thApril {
+
+	public static void main(String[] args) throws InterruptedException {
+		/*17/04/2020
+		===============
+		1) Go to https://store.hp.com/in-en/
+		2) Mouse over on Laptops menu and click on Pavilion
+		3) Under SHOPPING OPTIONS -->Processor -->Select Intel Core i7
+		4) Hard Drive Capacity -->More than 1TB
+		5) Select Sort By: Price: Low to High
+		6) Print the First resulting Product Name and Price
+		7) Click on Add to Cart
+		8) Click on Shopping Cart icon --> Click on View and Edit Cart
+		9) Check the Shipping Option --> Check availability at Pincode
+		10) Verify the order Total against the product price
+		11) Proceed to Checkout if Order Total and Product Price matches
+		12) Click on Place Order
+		13) Capture the Error message and Print
+		14) Close Browser*/
+
+		System.setProperty("webdriver.chrome.driver", "./drivers/Chromedriver/chromedriver Version 81/chromedriver.exe");
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notifications");
+
+		ChromeDriver driver = new ChromeDriver(options);
+		driver.get("https://store.hp.com/in-en/");
+
+		//maximize
+
+		driver.manage().window().maximize();
+
+		//timeout
+
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		driver.findElementByXPath("//button[@class='optanon-alert-box-close banner-close-button']").click();
+		
+		//driver.findElementByXPath("//span[@class='optly-modal-close close-icon']").click();
+
+		//Mouse over on Laptops menu and click on Pavilion
+
+		Actions builder = new Actions(driver);
+
+		builder.moveToElement(driver.findElementByLinkText("Laptops")).build().perform();
+
+		builder.click(driver.findElementByLinkText("Pavilion")).perform();
+
+		//driver.findElementByXPath("//button[@class='optanon-alert-box-close banner-close-button']").click();
+		Thread.sleep(2000);
+		//Under SHOPPING OPTIONS -->Processor -->Select Intel Core i7
+		driver.findElementByXPath("(//dt[@class='filter-options-title'])[5]").click();
+
+		//button[@class='optanon-alert-box-close banner-close-button']
+		driver.findElementByXPath("(//input[@class='product-filter-checkbox'])[2]").click();
+		Thread.sleep(5000);
+		//4) Hard Drive Capacity -->More than 1TB
+
+		driver.findElementByXPath("//span[text()='More than 1 TB']").click();
+
+		//5) Select Sort By: Price: Low to High
+		Thread.sleep(5000);
+		WebElement priceSort = driver.findElementByXPath("(//select[@class='sorter-options option-new'])[1]");
+
+		Select sortDropdown = new Select(priceSort);
+
+		sortDropdown.selectByValue("price_asc");
+
+		//6) Print the First resulting Product Name and Price
+		Thread.sleep(5000);
+		String productName = driver.findElementByXPath("(//a[@class='product-item-link'])[1]").getText();
+		System.out.println(productName);
+
+		String productPrice = driver.findElementByXPath("(//span[@class='price'])[2]").getText();
+		productPrice = productPrice.replaceAll("\\D","");
+		int prodPrice = Integer.parseInt(productPrice);
+		System.out.println("the price of the first product" +":"+ productPrice);
+
+		//7) Click on Add to Cart
+		driver.findElementByXPath("(//span[text()='Add To Cart'])[1]").click();
+
+		Thread.sleep(3000);
+		//Click on Shopping Cart icon --> Click on View and Edit Cart
+		driver.findElementByXPath("//a[@class='action showcart']").click();
+
+
+		driver.findElementByXPath("//a[@class='action primary viewcart']").click();
+		
+
+		//9) Check the Shipping Option --> Check availability at Pincode
+		driver.findElementByName("pincode").sendKeys("600100",Keys.TAB);
+		driver.findElementByXPath("//button[text()='check']").click();
+
+		String shipStatus = driver.findElementByXPath("//span[@class='available']").getText();
+		System.out.println(shipStatus);
+
+		//Verify the order Total against the product price
+		//orderdetail
+		String orderdetail = driver.findElementByXPath("(//span[@class='price'])[7]").getText();
+		orderdetail = orderdetail.replaceAll("\\D","");
+		int orderTotal = Integer.parseInt(orderdetail);
+		System.out.println("Tota Order price is" + ":" + orderdetail);
+
+		if (prodPrice == orderTotal ) {
+			System.out.println("product price and order total matches");
+			driver.findElementByXPath("(//button[@class='action primary checkout'])[1]").click();
+
+		}else {
+			System.out.println("Product price and order total not matching");
+		}
+
+		//Click on Place Order
+
+		driver.findElementByXPath("(//button[@class='action primary checkout'])[8]").click();
+
+		String errorMessage = driver.findElementById("customer-email-error").getText();
+		System.out.println(errorMessage);
+	}
+
+}
