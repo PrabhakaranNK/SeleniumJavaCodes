@@ -1,0 +1,142 @@
+package vanillaScripts21Days;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+
+public class MicrosoftAzureScript {
+
+	public static void main(String[] args) throws InterruptedException {
+	
+		System.setProperty("webdriver.chrome.driver","./drivers/Chromedriver/chromedriver Version 81/chromedriver.exe");
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+		
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notification");
+		
+		ChromeDriver driver = new ChromeDriver(options);
+		//hit the url
+		driver.get("https://azure.microsoft.com/en-in/");
+		
+		//maximize
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		
+		//2) Click on Pricing
+		driver.findElementByLinkText("Pricing").click();
+		
+		//3) Click on Pricing Calculator
+		driver.findElementByXPath("(//nav[@id='global-subnav']//li)[2]").click();
+		
+		//4) Click on Containers
+		driver.findElementByXPath("//button[text()='Containers']").click();
+		
+		//5) Select Container Instances
+		driver.findElementByXPath("(//span[text()='Container Instances'])[3]").click();
+		
+		//6) Click on Container Instance Added View
+		driver.findElementByLinkText("View").click();
+		
+		//7) Select Region as "South India"
+		WebElement regionDropdown = driver.findElementByXPath("(//select[@class='select'])[1]");
+		
+		Select regionOption = new Select(regionDropdown);
+		regionOption.selectByVisibleText("South India");
+		
+		//8) Set the Duration as 180000 seconds
+		/*driver.findElementByXPath("(//input[@class='text-input numeric'])[2]").sendKeys(Keys.BACK_SPACE);
+		driver.findElementByXPath("(//input[@class='text-input numeric'])[2]").sendKeys("180000");*/
+		driver.findElementByName("seconds").sendKeys(Keys.HOME,Keys.chord(Keys.SHIFT,Keys.END));
+		driver.findElementByName("seconds").sendKeys("180000");
+		//9) Select the Memory as 4GB
+		WebElement memoryDropdown = driver.findElementByXPath("(//select[@class='select'])[3]");
+		
+		Select memoryOption = new Select(memoryDropdown);
+		memoryOption.selectByValue("4");
+		
+		//10) Enable SHOW DEV/TEST PRICING
+		driver.findElementById("devtest-toggler").click();
+		Thread.sleep(3000);
+		
+		//11) Select Indian Rupee  as currency
+		WebElement currencyDropdown = driver.findElementByXPath("//select[@class='select currency-dropdown']");
+		Select currencyOptions = new Select(currencyDropdown);
+		currencyOptions.selectByValue("INR");
+		Thread.sleep(3000);
+		//12) Print the Estimated monthly price
+		String monthlyPrice = driver.findElementByXPath("(//span[@class='numeric'])[4]").getText();
+		//System.out.println(monthlyPrice);
+		//monthlyPrice = monthlyPrice.replaceAll("\\D","");
+		//float monthlyCost = Float.parseFloat(monthlyPrice);
+		System.out.println("The estimated monthly price is" + ":" + monthlyPrice);
+		
+		//13) Click on Export to download the estimate as excel
+		driver.findElementByXPath("//button[@class='calculator-button button-transparent export-button']").click();
+		
+		Thread.sleep(5000);
+		
+		//14) Verify the downloaded file in the local folder
+		
+		File file = new File("C:\\Users\\ADMIN\\Downloads\\ExportedEstimate (1).xlsx");
+		if (file.exists()) {
+			System.out.println("File is available in local");
+			
+		}else {
+			System.out.println("file is not found");
+		}
+			
+		Thread.sleep(2000);
+		//15) Navigate to Example Scenarios and Select CI/CD for Containers
+		
+		Actions builder = new Actions(driver);
+		WebElement exampleScenarioTab = driver.findElementByLinkText("Example Scenarios");
+		builder.moveToElement(exampleScenarioTab).click().perform();
+		Thread.sleep(4000);
+		WebElement containerTab = driver.findElementByXPath("//span[text()='CI/CD for Containers']");
+		builder.moveToElement(containerTab).click().build().perform();
+		
+		//16) Click Add to Estimate
+		Thread.sleep(2000);
+		driver.executeScript("window.scrollBy(0,500)");
+		WebElement addEstimateButton = driver.findElementByXPath("//button[text()='Add to estimate']");
+		builder.moveToElement(addEstimateButton).click().perform();
+		Thread.sleep(5000);
+		
+		//17) Change the Currency as Indian Rupee
+		WebElement currencySelection = driver.findElementByXPath("//select[@class='select currency-dropdown']");
+		Select indianCurrency = new Select(currencySelection);
+		
+		indianCurrency.selectByValue("INR");
+		
+		//18) Enable SHOW DEV/TEST PRICING
+		driver.findElementById("devtest-toggler").click();
+		Thread.sleep(2000);
+		
+		//19) Export the Estimate
+		//driver.executeScript(script, args)
+		driver.findElementByXPath("//button[@class='calculator-button button-transparent export-button']").click();
+		
+		//20) Verify the downloded file in the local folder
+		
+		File file1 = new File("C:\\Users\\ADMIN\\Downloads\\ExportedEstimate (2).xlsx");
+		if (file1.exists()) {
+			System.out.println("File is available in local");
+			
+		}else {
+			System.out.println("file is not found");
+		}
+			
+			
+		
+	
+		
+
+	}
+
+}
